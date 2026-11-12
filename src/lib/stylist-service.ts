@@ -28,7 +28,7 @@ export async function recommendHaircuts(_: { photo?: string | null; reference?: 
 
 export async function suggestAccessories(lookName: string) {
   await wait(1200);
-  return { types: ["floral", "kundan"], placement: "Back of bun", intensity: "Moderate", note: `Jasmine strands with kundan pins balance the ${lookName}.` };
+  return { types: ["floral", "kundan"], placement: "Bun", intensity: "Moderate", note: `Jasmine strands with kundan pins balance the ${lookName}.` };
 }
 
 const REPLIES = [

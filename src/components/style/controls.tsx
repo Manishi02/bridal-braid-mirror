@@ -2,6 +2,7 @@ import { useRef, useState, useEffect } from "react";
 import { Check, ImagePlus, Sparkles, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
+import { ACCEPTED_IMAGE_TYPES, validateImageFile } from "@/lib/bridal-validation";
 
 export function Chip({ active, children, onClick }: { active?: boolean; children: React.ReactNode; onClick?: () => void }) {
   return (
@@ -62,10 +63,11 @@ export function ChipGroup({
 }
 
 export function ImageUpload({
-  label, hint, value, onChange, sample,
-}: { label: string; hint?: string; value: string | null; onChange: (v: string | null) => void; sample?: string }) {
+  label, hint, value, onChange, sample, optional,
+}: { label: string; hint?: string; value: string | null; onChange: (v: string | null) => void; sample?: string; optional?: boolean }) {
   const ref = useRef<HTMLInputElement>(null);
   const [url, setUrl] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   useEffect(() => () => { if (url) URL.revokeObjectURL(url); }, [url]);
   return (
     <div className="space-y-3">
@@ -81,10 +83,17 @@ export function ImageUpload({
             <button
               type="button"
               aria-label="Remove photo"
-              onClick={() => onChange(null)}
+              onClick={() => { onChange(null); setError(null); }}
               className="absolute right-3 top-3 rounded-full bg-card/90 p-2 shadow-soft"
             >
               <X className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => ref.current?.click()}
+              className="absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-card/90 px-4 py-1.5 text-xs shadow-soft"
+            >
+              Replace photo
             </button>
           </>
         ) : (
@@ -92,22 +101,28 @@ export function ImageUpload({
             <span className="rounded-full bg-card p-4 shadow-soft"><ImagePlus className="h-6 w-6 text-rose" /></span>
             <span className="font-serif text-2xl">{label}</span>
             {hint && <span className="max-w-[16rem] text-sm text-muted-foreground">{hint}</span>}
+            <span className="text-xs text-muted-foreground">JPG, PNG or WEBP{optional ? " · Optional" : ""}</span>
           </button>
         )}
         <input
           ref={ref}
           type="file"
-          accept="image/*"
+          accept={ACCEPTED_IMAGE_TYPES.join(",")}
           className="hidden"
           onChange={(e) => {
             const f = e.target.files?.[0];
+            e.target.value = "";
             if (!f) return;
+            const err = validateImageFile(f);
+            setError(err);
+            if (err) return;
             const u = URL.createObjectURL(f);
             setUrl(u);
             onChange(u);
           }}
         />
       </div>
+      {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
       {sample && !value && (
         <button type="button" onClick={() => onChange(sample)} className="flex items-center gap-1.5 text-sm text-rose hover:underline">
           <Sparkles className="h-3.5 w-3.5" /> Use a sample photo instead

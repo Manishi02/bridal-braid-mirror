@@ -25,7 +25,7 @@ type Combo = { id: string; lookId: string; acc: AccessoryState };
 
 function AccessoryStudio() {
   const [lookId, setLookId] = useState(SAMPLE_LOOKS[0]!.id);
-  const [acc, setAcc] = useState<AccessoryState>({ ...emptyAccessories, types: ["floral"], placement: ["Back of bun"] });
+  const [acc, setAcc] = useState<AccessoryState>({ ...emptyAccessories, types: ["floral"], placement: ["Bun"] });
   const [combos, setCombos] = useState<Combo[]>([]);
   const look = SAMPLE_LOOKS.find((l) => l.id === lookId)!;
 
