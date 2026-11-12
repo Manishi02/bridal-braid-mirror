@@ -25,8 +25,8 @@ export function accessoryLabels(a: AccessoryState) {
   return a.types.map((t) => (t === "Other" ? a.other || "Custom" : ACCESSORY_TYPES.find((x) => x.id === t)?.name ?? t));
 }
 
-export function AccessoryPanel({ value, onChange, lookName = "selected look", showReference = true }: {
-  value: AccessoryState; onChange: (v: AccessoryState) => void; lookName?: string; showReference?: boolean;
+export function AccessoryPanel({ value, onChange, lookName = "selected look", showReference = true, hideNone = false }: {
+  value: AccessoryState; onChange: (v: AccessoryState) => void; lookName?: string; showReference?: boolean; hideNone?: boolean;
 }) {
   const [loading, setLoading] = useState(false);
   const [note, setNote] = useState<string | null>(null);
@@ -36,13 +36,13 @@ export function AccessoryPanel({ value, onChange, lookName = "selected look", sh
 
   return (
     <div className="space-y-7">
-      <div className="flex items-center justify-between rounded-2xl border border-border bg-card p-4">
+      {!hideNone && <div className="flex items-center justify-between rounded-2xl border border-border bg-card p-4">
         <div>
           <p className="font-medium">No accessories</p>
           <p className="text-sm text-muted-foreground">Keep the hairstyle clean</p>
         </div>
         <Switch checked={value.none} onCheckedChange={(none) => set({ none })} aria-label="No accessories" />
-      </div>
+      </div>}
 
       <div className={cn("space-y-7 transition", value.none && "pointer-events-none opacity-40")}>
         <div className="grid gap-2 sm:grid-cols-2">
