@@ -15,6 +15,7 @@ export type AccessoryState = {
   placement: string[];
   intensity: (typeof INTENSITY)[number];
   reference: string | null;
+  placementOther?: string;
 };
 
 export const emptyAccessories: AccessoryState = { none: false, types: [], other: "", placement: [], intensity: "Moderate", reference: null };
@@ -51,7 +52,7 @@ export function AccessoryPanel({ value, onChange, lookName = "selected look", sh
               <button key={a.id} type="button" onClick={() => toggle("types", a.id)} aria-pressed={on}
                 className={cn("rounded-2xl border p-4 text-left transition", on ? "border-rose bg-secondary" : "border-border bg-card hover:border-rose/60")}>
                 <p className="font-serif text-xl">{a.name}</p>
-                <p className="text-xs text-muted-foreground">{a.note}</p>
+                <p className="text-xs text-muted-foreground">{a.group !== "Other" && `${a.group} · `}{a.note}</p>
               </button>
             );
           })}
@@ -65,6 +66,9 @@ export function AccessoryPanel({ value, onChange, lookName = "selected look", sh
           <div className="flex flex-wrap gap-2">
             {PLACEMENTS.map((p) => <Chip key={p} active={value.placement.includes(p)} onClick={() => toggle("placement", p)}>{p}</Chip>)}
           </div>
+          {value.placement.includes("Other") && (
+            <Input value={value.placementOther ?? ""} onChange={(e) => set({ placementOther: e.target.value })} placeholder="Describe the placement…" className="h-11 rounded-full bg-card px-5" />
+          )}
         </div>
 
         <div className="space-y-3">
@@ -111,7 +115,7 @@ export function AccessorizedPreview({ image, acc, name }: { image: string; acc: 
         <div className="mt-2 flex flex-wrap gap-1.5">
           {accessoryLabels(acc).map((l) => <span key={l} className="rounded-full bg-card/90 px-2.5 py-0.5 text-xs">{l}</span>)}
           {!acc.none && acc.types.length > 0 && <span className="rounded-full bg-rose px-2.5 py-0.5 text-xs text-accent-foreground">{acc.intensity}</span>}
-          {acc.placement.map((p) => <span key={p} className="rounded-full border border-card/60 px-2.5 py-0.5 text-xs text-primary-foreground">{p}</span>)}
+          {acc.placement.map((p) => (p === "Other" ? acc.placementOther || "Custom placement" : p)).map((p) => <span key={p} className="rounded-full border border-card/60 px-2.5 py-0.5 text-xs text-primary-foreground">{p}</span>)}
         </div>
       </div>
     </div>
