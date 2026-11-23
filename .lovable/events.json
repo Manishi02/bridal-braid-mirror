@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "events": {
+    "project.hairstyles_generated": {
+      "event_schema_version": 1,
+      "description": "User generated (or regenerated) hairstyle recommendations.",
+      "privacy": {
+        "contains_pii": false,
+        "purpose": "product_analytics"
+      },
+      "properties_schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "flow",
+          "regenerate"
+        ],
+        "properties": {
+          "flow": {
+            "type": "string"
+          },
+          "regenerate": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "project.photo_uploaded": {
+      "event_schema_version": 1,
+      "description": "A face, outfit or reference photo was added in the Bridal Studio.",
+      "privacy": {
+        "contains_pii": false,
+        "purpose": "product_analytics"
+      },
+      "properties_schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "flow"
+        ],
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "face",
+              "outfit",
+              "reference"
+            ]
+          },
+          "flow": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "project.preview_opened": {
+      "event_schema_version": 1,
+      "description": "User opened the before/after preview of a recommended look.",
+      "privacy": {
+        "contains_pii": false,
+        "purpose": "product_analytics"
+      },
+      "properties_schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "flow"
+        ],
+        "properties": {
+          "flow": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

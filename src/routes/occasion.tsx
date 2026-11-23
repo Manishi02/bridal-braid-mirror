@@ -90,6 +90,7 @@ function OccasionStylist() {
   const generate = async () => {
     const err = stepError(4, { face, occasions, occasionOther, prefs, prefOther, instructions });
     setError(err); if (err) return;
+    window.__lovableEvents?.track?.("project.hairstyles_generated", { flow: "bridal", regenerate: phase === "results" });
     setPhase("results"); setGenerating(true); setLooks(null); setCompare([]); setPreviewId(null); setCustomizeId(null);
     const r = await recommendHairstyles({ faceImage: face, outfitImage: outfit, occasions: occasionList, prefs, accessories: effectiveAcc.types, instructions });
     setLooks(r.slice(0, 5)); setGenerating(false);
@@ -97,6 +98,7 @@ function OccasionStylist() {
   const save = (l: Look) => {
     const a = accFor(l.id);
     const accs = accMode === "ai" && !accByLook[l.id] ? (l.accessories ?? []) : accessoryLabels(a);
+    window.__lovableEvents?.track?.("project.look_saved", { flow: "bridal" });
     saveLook({ id: `${l.id}-${Date.now()}`, name: l.name, image: l.image, accessories: accs, intensity: a.none || accs.length === 0 ? undefined : a.intensity, occasions: occasionList });
     toast.success(`${l.name} saved to your looks`);
   };
@@ -131,13 +133,14 @@ function OccasionStylist() {
                       <div><p className="eyebrow">Suggested accessories</p><p className="mt-1 text-sm">{(accMode === "ai" && !accByLook[l.id] ? l.accessories ?? [] : accessoryLabels(accFor(l.id))).join(", ") || "None"}</p></div>
                       <div><p className="eyebrow">Styling tips</p><ul className="mt-1 space-y-1 text-sm">{(l.tips ?? l.why).map((t) => <li key={t}>· {t}</li>)}</ul></div>
                       <div className="grid grid-cols-3 gap-2 pt-2">
-                        <Button size="sm" variant="soft" onClick={() => { setPreviewId(l.id); setCustomizeId(null); }}><Eye /> Preview</Button>
+                        <Button size="sm" variant="soft" onClick={() => { window.__lovableEvents?.track?.("project.preview_opened", { flow: "bridal" }); setPreviewId(l.id); setCustomizeId(null); }}><Eye /> Preview</Button>
                         <Button size="sm" variant="soft" onClick={() => { setCustomizeId(l.id); setPreviewId(null); }}><Wand2 /> Customize</Button>
                         <Button size="sm" variant="rose" onClick={() => save(l)}><Heart /> Save</Button>
                       </div>
                       <label className="flex cursor-pointer items-center gap-2 text-sm">
                         <Checkbox checked={inCompare} onCheckedChange={(c) => {
                           if (c && compare.length >= 3) { toast.error("Compare up to 3 looks at a time"); return; }
+                          if (c) window.__lovableEvents?.track?.("project.look_compared", { flow: "bridal", count: compare.length + 1 });
                           setCompare(c ? [...compare, l.id] : compare.filter((x) => x !== l.id));
                         }} /> Add to compare
                       </label>
@@ -216,9 +219,9 @@ function OccasionStylist() {
         {step === 0 && (
           <Section title="Begin with your photos" body="A face photo is required. Your outfit and a hairstyle reference are optional but help guide the look.">
             <div className="grid gap-6 sm:grid-cols-3">
-              <ImageUpload label="Face photo" hint="Front-facing, hair visible · Required" value={face} onChange={(v) => { setFace(v); if (v) setError(null); }} sample={images.lookWaves} />
-              <ImageUpload label="Outfit photo" hint="Lehenga, saree or gown" optional value={outfit} onChange={setOutfit} sample={images.lookBraid} />
-              <ImageUpload label="Hairstyle reference" hint="A look you love" optional value={reference} onChange={setReference} sample={images.heroBridal} />
+              <ImageUpload label="Face photo" hint="Front-facing, hair visible · Required" value={face} onChange={(v) => { setFace(v); if (v) { setError(null); window.__lovableEvents?.track?.("project.photo_uploaded", { kind: "face", flow: "bridal" }); } }} sample={images.lookWaves} />
+              <ImageUpload label="Outfit photo" hint="Lehenga, saree or gown" optional value={outfit} onChange={(v) => { setOutfit(v); if (v) window.__lovableEvents?.track?.("project.photo_uploaded", { kind: "outfit", flow: "bridal" }); }} sample={images.lookBraid} />
+              <ImageUpload label="Hairstyle reference" hint="A look you love" optional value={reference} onChange={(v) => { setReference(v); if (v) window.__lovableEvents?.track?.("project.photo_uploaded", { kind: "reference", flow: "bridal" }); }} sample={images.heroBridal} />
             </div>
           </Section>
         )}

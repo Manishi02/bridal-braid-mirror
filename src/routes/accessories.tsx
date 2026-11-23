@@ -62,7 +62,7 @@ function AccessoryStudio() {
                   <div key={c.id} className="relative space-y-2">
                     <button aria-label="Remove" onClick={() => setCombos(combos.filter((x) => x.id !== c.id))} className="absolute right-2 top-2 z-10 rounded-full bg-card/90 p-1.5"><X className="h-3.5 w-3.5" /></button>
                     <AccessorizedPreview image={l.image} name={l.name} acc={c.acc} />
-                    <Button size="sm" variant="rose" className="w-full" onClick={() => { saveLook({ id: c.id, name: l.name, image: l.image, accessories: accessoryLabels(c.acc), intensity: c.acc.none ? undefined : c.acc.intensity }); toast.success("Combination saved"); }}>
+                    <Button size="sm" variant="rose" className="w-full" onClick={() => { window.__lovableEvents?.track?.("project.look_saved", { flow: "accessories" }); saveLook({ id: c.id, name: l.name, image: l.image, accessories: accessoryLabels(c.acc), intensity: c.acc.none ? undefined : c.acc.intensity }); toast.success("Combination saved"); }}>
                       <Heart /> Save
                     </Button>
                   </div>
